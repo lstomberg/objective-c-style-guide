@@ -6,6 +6,7 @@ This document is based on, and inspired by, the awesome [NYTimes Objective-C Sty
 
 Also, [we’re hiring](https://careers.epic.com).
 
+
 ## Mandatory Reading
 
 If you haven't read the [Coding Guidelines for Cocoa](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/CodingGuidelines.html) yet, it's probably a good idea to stop right here and come back only after you're finished with it. You should pay special attention to:
@@ -14,9 +15,11 @@ If you haven't read the [Coding Guidelines for Cocoa](https://developer.apple.co
 * [Property & type naming](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingIvarsAndTypes.html)
 * [Allowed abbreviations](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/Articles/APIAbbreviations.html#//apple_ref/doc/uid/20001285-BCIHCGAE)
 
+
 ## Introduction
 
 This style guide conforms to IETF's [RFC 2119](http://tools.ietf.org/html/rfc2119). In particular, code which goes against the RECOMMENDED/SHOULD style is allowed, but should be carefully considered.
+
 
 ## Table of Contents
 
@@ -50,11 +53,10 @@ This style guide conforms to IETF's [RFC 2119](http://tools.ietf.org/html/rfc211
 
 ## Braces
 
-* Use [1TBS](http://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS) for control statements.   for method declaration. (Opening brace appears in the following line.)
-
-* Method braces MUST use [K&R](http://en.wikipedia.org/wiki/Indent_style#K.26R_style).  Other braces (`if`/`else`/`switch`/`while` etc.) MUST follow [OTBS](https://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS).
+Method braces MUST use [K&R](http://en.wikipedia.org/wiki/Indent_style#K.26R_style) (opening brace appears in the following line).  Other braces (`if`/`else`/`switch`/`while` etc.) MUST follow [1TBS](https://en.wikipedia.org/wiki/Indent_style#Variant:_1TBS).
 
 **Preferred:**
+
 ```objc
 -(void)_talkToCoworker
 {
@@ -67,6 +69,7 @@ This style guide conforms to IETF's [RFC 2119](http://tools.ietf.org/html/rfc211
 ```
 
 **Not Preferred:**
+
 ```objc
 -(void)_talkToCoworker {
   if (user.isHappy)
@@ -80,14 +83,15 @@ This style guide conforms to IETF's [RFC 2119](http://tools.ietf.org/html/rfc211
 }
 ```
 
+
 ## Spacing
 
-* Indent MUST using 4 spaces. You MUST NOT indent with tabs. Be sure to set this preference in Xcode.
+Indent MUST using 4 spaces. You MUST NOT indent with tabs. Be sure to set this preference in Xcode.
 When working with older projects that used *wrong* number of spaces, adapt to the existing style. **Do not** convert existing projects to new guidelines or you'll break `svn diff`.
 
-* There should be exactly one blank line between methods to aid in visual clarity and organization. Whitespace within methods should separate functionality, but often there should probably be new methods.
+There should be exactly one blank line between methods to aid in visual clarity and organization. Whitespace within methods should separate functionality, but often there should probably be new methods.
 
-* Colon-aligning method invocation should often be avoided.  There are cases where a method signature may have >= 3 colons and colon-aligning makes the code more readable. Please do **NOT** however colon align methods containing blocks because Xcode's indenting makes it illegible.
+Colon-aligning method invocation should often be avoided.  There are cases where a method signature may have >= 3 colons and colon-aligning makes the code more readable. Please do **NOT** however colon align methods containing blocks because Xcode's indenting makes it illegible.
 
 **Preferred:**
 
@@ -113,6 +117,7 @@ When working with older projects that used *wrong* number of spaces, adapt to th
                  }];
 ```
 
+
 ## Comments
 
 When they are needed, comments SHOULD be used to explain **why** a particular piece of code does something not the steps you're taking. Any comments that are used MUST be kept up-to-date or deleted.
@@ -122,11 +127,13 @@ You MUST NOT commit code that has been commented out (take a second and go throu
 [Documentation comments](http://nshipster.com/documentation/) are good. Use them when they're actually useful and needed. If you can refactor something so that you don't need to explain it, do that instead.
 
 
-## init and dealloc
+## Init and Dealloc
 
 `dealloc` methods MUST be placed at the top of the implementation. `init` methods MUST be placed directly below the `dealloc` methods of any class.  You MAY consider wrapping them in `#pragma mark - Lifecycle`.
 
-`init` methods should be structured like this:
+`init` methods should follow the convention provided by Apple's generated code template.  A return type of 'instancetype' should also be used instead of 'id'.
+
+**Preferred:**
 
 ```objc
 - (instancetype)init {
@@ -139,11 +146,49 @@ You MUST NOT commit code that has been commented out (take a second and go throu
 }
 ```
 
+**Not Preferred:**
+
+```objc
+- (id)init {
+    if(!(self = [super init])) {
+      return;
+    }
+
+    // Custom initialization
+
+    return self;
+}
+```
+
+See [Class Constructor Methods](#class-constructor-methods) for link to article on instancetype.
+
+
+## Class Constructor Methods
+
+Where class constructor methods are used, these MUST return type of 'instancetype' and never 'id'. This ensures the compiler correctly infers the result type.
+
+**Preferred:**
+
+```objc
+@interface Airplane
++(instancetype)airplaneWithType:(RWTAirplaneType)type;
+@end
+```
+
+**Not Preferred:**
+
+```objc
+@interface Airplane
++(id)airplaneWithType:(RWTAirplaneType)type;
+@end
+```
+
+More information on instancetype can be found on [NSHipster.com](http://nshipster.com/instancetype/).
 
 
 ## Naming
 
-Apple naming conventions should be adhered to wherever possible, especially those related to [memory management rules](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html) ([NARC](http://stackoverflow.com/a/2865194/340508)).
+Apple naming conventions SHOULD be adhered to wherever possible, especially those related to [memory management rules](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html) ([NARC](http://stackoverflow.com/a/2865194/340508)).
 
 Long, descriptive method and variable names are good.
 
@@ -159,14 +204,12 @@ UIButton *settingsButton;
 UIButton *setBut;
 ```
 
-A three letter prefix (or longer) should always be used for class names and constants.
-
-Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
+A three letter prefix (or longer) should always be used for class names and constants.  Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
 
 **Preferred:**
 
 ```objc
-static NSTimeInterval const kRWTTutorialViewControllerNavigationFadeAnimationDuration = 0.3;
+static NSTimeInterval const RWTTutorialViewControllerNavigationFadeAnimationDuration = 0.3;
 ```
 
 **Not Preferred:**
@@ -189,23 +232,15 @@ Properties should be camel-case with the leading word being lowercase.
 id varnm;
 ```
 
-### Underscores
-
-----
-When using properties, instance variables should always be accessed and mutated using `self.`. This means that all properties will be visually distinct, as they will all be prefaced with `self.`.
-
-An exception to this: inside initializers, the backing instance variable (i.e. _variableName) should be used directly to avoid any potential side effects of the getters/setters.
----
-
-Local variables MUST NOT contain underscores.
 
 ## Methods
 
 Follow Apple API examples and docs. There SHOULD be a space between `+`/`-` and method name, a space between method segments, a space between type and asterisk. No spaces anywhere else.  Always include a keyword and be descriptive with the word before the argument which describes the argument.
 
-The usage of the words "and", "with", "for" are reserved.  It should not be used for multiple parameters as illustrated in the `initWithWidth:height:` example below.
+The usage of the words "and", "with", "for" are reserved.  It SHOULD NOT be used for multiple parameters as illustrated in the `initWithWidth:height:` example below.
 
 **Preferred:**
+
 ```objc
 - (void)setExampleText:(NSString *)text image:(UIImage *)image;
 - (void)sendAction:(SEL)aSelector to:(id)anObject forAllCells:(BOOL)flag;
@@ -223,6 +258,24 @@ The usage of the words "and", "with", "for" are reserved.  It should not be used
 - (instancetype)initWith:(int)width and:(int)height;  // Never do this.
 ```
 
+
+### Private Methods
+
+Methods which are not exposed in the header MUST be prefixed with an underscore.  This is used to indicate the visibility of code and increases readability.
+
+**Preferred:**
+
+```objc
+- (NSString*)_demographicStringForPatient:(HKPatient *)patient;
+```
+
+**Not Preferred:**
+
+```objc
+- (NSString*)demographicStringForPatient:(HKPatient *)patient;
+```
+
+
 ## Variables
 
 Variables SHOULD be named descriptively, with the variable’s name clearly communicating what the variable _is_ and pertinent information a programmer needs to use that value properly.
@@ -239,9 +292,11 @@ Variables SHOULD be named descriptively, with the variable’s name clearly comm
 
 Single letter variable names are NOT RECOMMENDED, except as simple counter variables in loops.
 
+Local variables MUST NOT be prefixed with an underscore.
+
 Asterisks indicating a type is a pointer MUST be “attached to” the variable name. **For example,** `NSString *text` **not** `NSString* text` or `NSString * text`, except in the case of constants (`NSString * const NYTConstantString`).
 
-[Instance variables](#instance-variables) SHOULD be used in place of private properties whenever possible. The use of private properties is an indication that additional code is executing due to the method call or that something is dependent on the code going through the setter or getter.
+[Instance variables](#instance-variables) SHOULD be used in place of private properties whenever possible. The use of private properties is an indication that additional code is executing due to the method call or that there is a dependency on the code going through the setter or getter.
 
 **Preferred:**
 
@@ -290,8 +345,7 @@ Properties MUST have the nonatomic attribute.  All view properties of a UIView s
 @property (nonatomic, strong) NSString *tutorialName;
 ```
 
-Properties with mutable counterparts (e.g. NSString) should prefer `copy` instead of `strong`.
-Why? Even if you declared a property as `NSString` somebody might pass in an instance of an `NSMutableString` and then change it without you noticing that.  
+Properties with mutable counterparts (e.g. NSString) SHOULD use `copy`.  Why? Even if you declared a property as `NSString` somebody might pass in an instance of an `NSMutableString` and then change it without you noticing that.  
 
 **Preferred:**
 
@@ -305,13 +359,15 @@ Why? Even if you declared a property as `NSString` somebody might pass in an ins
 @property (strong, nonatomic) NSString *tutorialName;
 ```
 
+
 ## Dot-Notation Syntax
 
 Dot syntax is purely a convenient wrapper around accessor method calls. When you use dot syntax, the property is still accessed or changed using getter and setter methods.  Read more [here](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/EncapsulatingData/EncapsulatingData.html)
 
-Dot-notation should **always** be used for accessing and mutating properties, as it makes code more concise. Bracket notation is preferred in all other instances.
+Dot-notation SHOULD be used for accessing and mutating properties, as it makes code more concise. Bracket notation is preferred in all other instances.
 
 **Preferred:**
+
 ```objc
 NSInteger arrayCount = response.array.count;
 view.backgroundColor = [UIColor orangeColor];
@@ -319,15 +375,17 @@ view.backgroundColor = [UIColor orangeColor];
 ```
 
 **Not Preferred:**
+
 ```objc
 NSInteger arrayCount = [[response array] count];
 [view setBackgroundColor:[UIColor orangeColor]];
 UIApplication.sharedApplication.delegate;
 ```
 
+
 ## Literals
 
-`NSString`, `NSDictionary`, `NSArray`, and `NSNumber` literals should be used whenever creating immutable instances of those objects. Pay special care that `nil` values can not be passed into `NSArray` and `NSDictionary` literals, as this will cause a crash.  Spaces should be used between each value if initializing with multiple values.
+`NSString`, `NSDictionary`, `NSArray`, and `NSNumber` literals SHOULD be used whenever creating immutable instances of those objects. Pay special care that `nil` values can not be passed into `NSArray` and `NSDictionary` literals, as this will cause a crash.  Spaces SHOULD be used between each value if initializing with multiple values.
 
 **Preferred:**
 
@@ -346,6 +404,7 @@ NSDictionary *productManagers = [NSDictionary dictionaryWithObjectsAndKeys: @"Am
 NSNumber *shouldUseLiterals = [NSNumber numberWithBool:YES];
 NSNumber *buildingStreetNumber = [NSNumber numberWithInteger:10018];
 ```
+
 
 ## Constants
 
@@ -373,6 +432,7 @@ static CGFloat const kRWTImageThumbnailHeight = 50.0;
 #define thumbnailHeight 2
 ```
 
+
 ### Subclassing and Testing
 
 Private properties and methods that need to be visible to some parts of the code for subclassing or testing purposes SHOULD be declared in class extensions in separate header files. To indicate the private nature of the header, the filename SHOULD follow the `ClassName_subclass.h` format (notice an `_` used instead of a `+` to differentiate from category headers).
@@ -389,7 +449,6 @@ Private properties and methods that need to be visible to some parts of the code
 @end
 ```
 
-
 **Not Preferred:**
 
 ```objc
@@ -402,17 +461,17 @@ Private properties and methods that need to be visible to some parts of the code
 @end
 ```
 
+
 ## Refactoring
 
-When you add/change code and you see that the nearby code is bad (e.g. doesn't comply with the guidelines you're reading right now), **change it**.
+When you add/change code and you see that the nearby code is bad (e.g. doesn't comply with the guidelines you're reading right now), you are encouraged to **change it**.
 
 **Example**: you want to add a constant at the top of a file and you see that already present constants use #define instead of const. You SHOULD change #define to const and then add your constant.
 
 
-
 ## Enumerated Types
 
-When using `enum`s, it is recommended to use the new fixed underlying type specification because it has stronger type checking and code completion. The SDK now includes a macro to facilitate and encourage use of fixed underlying types: `NS_ENUM()`.  The name of your enum values should begin with the `enum` name.
+When using `enum`s, you MUST use `NS_ENUM()`.  The name of your enum values should begin with the `enum` name.
 
 **For Example:**
 
@@ -424,7 +483,10 @@ typedef NS_ENUM(NSInteger, RWTLeftMenuTopItemType) {
 };
 ```
 
-You can also make explicit value assignments (showing older k-style constant definition):
+You MAY make explicit value assignments (showing older k-style constant definition).  This is a good way to represent a category on the client.
+
+
+**Preferred:**
 
 ```objc
 typedef NS_ENUM(NSInteger, RWTGlobalConstants) {
@@ -434,8 +496,6 @@ typedef NS_ENUM(NSInteger, RWTGlobalConstants) {
   RWTPinCountMax = 500,
 };
 ```
-
-Older k-style constant definitions are a good way to represent a category on the client.
 
 **Not Preferred:**
 
@@ -462,6 +522,7 @@ typedef NS_OPTIONS(NSUInteger, NYTAdCategory) {
 };
 ```
 
+
 ## Image Naming
 
 Image names should be named consistently to preserve organization and developer sanity. Images SHOULD be named as one camel case string with a description of their purpose, followed by the un-prefixed name of the class or property they are customizing (if there is one), followed by a further description of color and/or placement, and finally their state.
@@ -473,10 +534,12 @@ Image names should be named consistently to preserve organization and developer 
 
 Images that are used for a similar purpose SHOULD be grouped in respective groups in an Images folder or Asset Catalog.
 
+
 ## Case Statements
 
-Braces are not required for case statements, unless enforced by the complier.  
-When a case contains more than one line, braces should be added.  You should add an empty line between each case.
+Braces are not required for case statements, unless enforced by the complier.  When a case contains more than one line, braces SHOULD be added.  You SHOULD add an empty line between each case.
+
+**Preferred:**
 
 ```objc
 switch (condition) {
@@ -498,10 +561,32 @@ switch (condition) {
     // ...
     break;
 }
+```
+
+**Not Preferred:**
+
+```objc
+switch (condition) {
+  case 1:
+    // ...
+    break;
+  case 2:
+    // ...
+    // Multi-line example not using braces
+    break;
+  case 3:
+    // ...
+    break;
+  default:
+    // ...
+    break;
+}
 
 ```
 
 There are times when the same code can be used for multiple cases, and a fall-through should be used.  A fall-through is the removal of the 'break' statement for a case thus allowing the flow of execution to pass to the next case value.  A fall-through should be commented for coding clarity.  The case that is falling-through should not contain its own logic.
+
+**Preferred:**
 
 ```objc
 switch (condition) {
@@ -515,7 +600,23 @@ switch (condition) {
     // ...
     break;
 }
+```
 
+**Not Preferred:**
+
+```objc
+switch (condition) {
+  case 1:
+    //code executed
+
+  case 2:
+    // code executed for values 1 and 2
+    break;
+
+  default:
+    // ...
+    break;
+}
 ```
 
 When using an enumerated type for a switch and each value is being handled, 'default' is not needed.   For example:
@@ -539,22 +640,6 @@ switch (menuType) {
 }
 ```
 
-* LWS * LWS *LWS - put protocols here??
-## Private Properties
-
-Private properties should be declared in class extensions (anonymous categories) in the implementation file of a class. Named categories (such as `RWTPrivate` or `private`) should never be used unless extending another class.   The Anonymous category can be shared/exposed for testing using the <headerfile>_private.h file naming convention.
-
-**For Example:**
-
-```objc
-@interface RWTDetailViewController ()
-
-@property (strong, nonatomic) GADBannerView *googleAdView;
-@property (strong, nonatomic) ADBannerView *iAdView;
-@property (strong, nonatomic) UIWebView *adXWebView;
-
-@end
-```
 
 ## Booleans
 
@@ -586,6 +671,7 @@ If the name of a `BOOL` property is expressed as an adjective, the property can 
 
 Text and example taken from the [Cocoa Naming Guidelines](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CodingGuidelines/Articles/NamingIvarsAndTypes.html#//apple_ref/doc/uid/20001284-BAJGIIJE).
 
+
 ## Conditionals
 
 Conditional bodies MUST use braces even when a conditional body could be written without braces (e.g., it is one line only) to prevent [errors](https://github.com/NYTimes/objective-c-style-guide/issues/26#issuecomment-22074256). These errors include adding a second line and expecting it to be part of the if-statement. Another, [even more dangerous defect](http://programmers.stackexchange.com/a/16530) can happen where the line “inside” the if-statement is commented out, and the next line unwittingly becomes part of the if-statement. In addition, this style is more consistent with all other conditionals, and therefore more easily scannable.
@@ -610,17 +696,18 @@ if (!error) return success;
 ```
 
 
-
 ### Ternary Operator
 
 The intent of the ternary operator, `?` , is to increase clarity or code neatness. The ternary SHOULD only evaluate a single condition per expression. Evaluating multiple conditions is usually more understandable as an if statement or refactored into named variables.
 
 **Preferred:**
+
 ```objc
 result = (a > b) ? x : y;
 ```
 
 **Not Preferred:**
+
 ```objc
 result = a > b ? x = c > d ? c : d : y;
 ```
@@ -628,6 +715,7 @@ result = a > b ? x = c > d ? c : d : y;
 Non-boolean variables SHOULD be compared against something and parentheses MUST added for improved readability.  If the variable being compared is a boolean type then no parentheses are needed.
 
 **Preferred:**
+
 ```objc
 NSInteger value = 5;
 result = (value != 0) ? x : y;
@@ -637,40 +725,14 @@ result = isHorizontal ? x : y;
 ```
 
 **Not Preferred:**
+
 ```objc
 NSInteger value = 8;
 result = value ? x : y;
 ```
 
-## Init Methods
 
-Init methods should follow the convention provided by Apple's generated code template.  A return type of 'instancetype' should also be used instead of 'id'.
-
-```objc
--(instancetype)init {
-  self = [super init];
-  if (self) {
-    // ...
-  }
-  return self;
-}
-```
-
-See [Class Constructor Methods](#class-constructor-methods) for link to article on instancetype.
-
-## Class Constructor Methods
-
-Where class constructor methods are used, these should always return type of 'instancetype' and never 'id'. This ensures the compiler correctly infers the result type.
-
-```objc
-@interface Airplane
-+(instancetype)airplaneWithType:(RWTAirplaneType)type;
-@end
-```
-
-More information on instancetype can be found on [NSHipster.com](http://nshipster.com/instancetype/).
-
-## CGRect Functions
+## CGRect Access
 
 When accessing the `x`, `y`, `width`, or `height` of a `CGRect`, always use direct struct member access.  When creating a `CGRect` you should use the CGGeometry `make` methods.
 
@@ -698,10 +760,10 @@ CGFloat height = CGRectGetHeight(frame);
 CGRect frame = (CGRect){ .origin = CGPointZero, .size = frame.size };
 ```
 
+
 ## Golden Path
 
 Your code SHOULD follow the [golden path](http://en.wikipedia.org/wiki/Happy_path). Multiple nested conditionals SHOULD be avoided.  Multiple return statements are OK.
-
 
 **Preferred:**
 
@@ -725,11 +787,13 @@ Your code SHOULD follow the [golden path](http://en.wikipedia.org/wiki/Happy_pat
 }
 ```
 
+
 ## Error handling
 
 When methods return an error parameter by reference, code MUST switch on the returned value and MUST NOT switch on the error variable.
 
 **Preferred:**
+
 ```objc
 NSError *error;
 BOOL success = [self trySomethingWithError:&error];
@@ -739,6 +803,7 @@ if (!success) {
 ```
 
 **Not Preferred:**
+
 ```objc
 NSError *error;
 [self trySomethingWithError:&error];
@@ -748,10 +813,6 @@ if (error) {
 ```
 
 Some of Apple’s APIs write garbage values to the error parameter (if non-NULL) in successful cases, so switching on the error can cause false negatives (and subsequently crash).
-
-
-
-
 
 
 ### Categories
@@ -791,50 +852,31 @@ Methods and properties added in categories MUST be named with an app- or organiz
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*LWS SINGLE INSTANCE vs Singleton
-*class extensions in implementation for protocol adherence
-*private methods begin with _.  Public methods dont.
-
-
-
 ## Protocols
 
 In a [delegate or data source protocol](https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/DelegatesandDataSources/DelegatesandDataSources.html), the first parameter to each method SHOULD be the object sending the message.
 
 This helps disambiguate in cases when an object is the delegate for multiple similarly-typed objects, and it helps clarify intent to readers of a class implementing these delegate methods.
 
-**For example:**
+**Preferred:**
 
 ```objc
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 ```
 
-**Not:**
+**Not Preferred:**
 
 ```objc
 - (void)didSelectTableRowAtIndexPath:(NSIndexPath *)indexPath;
 ```
 
 
-
-
 ## Singletons
 
 Singleton objects SHOULD use a thread-safe pattern for creating their shared instance.
+
+**Preferred:**
+
 ```objc
 +(instancetype)sharedInstance {
     static id sharedInstance = nil;
@@ -847,6 +889,18 @@ Singleton objects SHOULD use a thread-safe pattern for creating their shared ins
     return sharedInstance;
 }
 ```
+
+**Not Preferred:**
+```objc
++(instancetype)sharedInstance {
+    static id sharedInstance;
+    if(!sharedInstance) {
+      sharedInstance = [[self class] new];
+    }
+    return sharedInstance;
+}
+```
+
 This will prevent [possible and sometimes frequent crashes](http://cocoasamurai.blogspot.com/2011/04/singletons-your-doing-them-wrong.html).
 
 
@@ -856,6 +910,17 @@ The physical files SHOULD be kept in sync with the Xcode project files in order 
 
 Target Build Setting “Treat Warnings as Errors” SHOULD be enabled. Enable as many [additional warnings](http://boredzo.org/blog/archives/2009-11-07/warnings) as possible. If you need to ignore a specific warning, use [Clang’s pragma feature](http://clang.llvm.org/docs/UsersManual.html#controlling-diagnostics-via-pragmas).
 
+
 # Acknowledgements
 
 This document is largely based on [The official raywenderlich.com Objective-C style guide](https://github.com/raywenderlich/objective-c-style-guide) and [NYTimes Objective-C Style Guide](https://github.com/NYTimes/objective-c-style-guide/), with sections we agreed with and felt we couldn't improve upon pulled verbatim from them.
+
+
+
+
+
+
+
+
+*class extensions in implementation for protocol adherence
+*new vs alloc/init
